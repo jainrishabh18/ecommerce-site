@@ -20,6 +20,14 @@ class Product(models.Model):
 
     def __str__(self):
         return self.name
+    
+    @property
+    def imageURL(self):
+        try:
+            url = self.image.url
+        except:
+            url = ''
+        return url
 
 class Order(models.Model):
     customer = models.ForeignKey(Customer , on_delete=models.SET_NULL , blank=True, null=True)
@@ -30,11 +38,36 @@ class Order(models.Model):
     def __str__(self):
         return str(self.id)
 
+    @property
+    #
+    def get_cart_total(self):
+        #orderitems is having all the items that is in order list
+        orderitems = self.orderitem_set.all()
+        #item.get_total is  taking every item along
+        #with thier price and quantity and adding them 
+        #and the sum function is adding all the totals and giving calculation
+        #  for all the items in the cart
+        total = sum([item.get_total for item in orderitems])
+        return total
+
+    def get_cart_items(self):
+        orderitems = self.orderitem_set.all()
+        total = sum([item.quantity for item in orderitems])
+        return total
+
+    
+
 class OrderItem(models.Model):
     product = models.ForeignKey(Product, on_delete=models.SET_NULL,blank=True,null=True)
     Order = models.ForeignKey(Order, on_delete=models.SET_NULL,blank=True,null=True)
     quantity = models.IntegerField(default=0, blank=True, null=True)
     date_added = models.DateTimeField(auto_now_add=True)
+
+    @property
+    def get_total(self):
+        #giving total of a particular order 
+        total=self.product.price * self.quantity
+        return total
 
 class ShippingAddress(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.SET_NULL, blank=True, null=True)
