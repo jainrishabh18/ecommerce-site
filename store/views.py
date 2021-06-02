@@ -1,5 +1,7 @@
 from django.shortcuts import render
+from django.http import JsonResponse
 from .models import *
+import json
 
 # Create your views here.
 #..
@@ -30,10 +32,10 @@ def checkout(request):
         items = []
         order = {'get_cart_total': 0, 'get_cart_items': 0}
     context = {'items': items, 'order': order}
-    
     return render(request,'store/checkout.html',context)
 
-def wishlist(request):
-    context = {}
-    return render(request,'store/wishlist.html',context)
+
     
+def updateItem(request):
+    return JsonResponse('Item was added' , safe=False)
+    #json response is used when we dont have to return any template instead when we want to return any message.
